@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="体态打卡">
+    <title>体态矫正打卡 - 坚持改变</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .streak {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .streak-number {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .streak-text {
+            text-align: center;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .exercise-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .exercise-item:last-child {
+            border-bottom: none;
+        }
+
+        .exercise-info {
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .exercise-detail {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        .exercise-block {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .exercise-block:last-of-type {
+            border-bottom: none;
+        }
+
+        .exercise-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .exercise-emoji {
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .exercise-title-box {
+            flex: 1;
+        }
+
+        .exercise-name {
+            font-weight: 700;
+            font-size: 17px;
+            color: #2d3748;
+            margin-bottom: 4px;
+        }
+
+        .exercise-importance {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            background: #eef2ff;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .exercise-description {
+            background: #f8fafc;
+            border-left: 3px solid #667eea;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .exercise-description strong {
+            color: #334155;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .sets-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .set-item {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .set-item:hover {
+            border-color: #cbd5e0;
+        }
+
+        .set-item.checked {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-color: #667eea;
+        }
+
+        .set-label {
+            font-size: 15px;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .set-item.checked .set-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .checkbox {
+            width: 28px;
+            height: 28px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .checkbox.checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .checkbox-small {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .set-item.checked .checkbox-small {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+
+        .set-item.checked .checkbox-small::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .complete-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .complete-btn:active {
+            transform: scale(0.98);
+        }
+
+        .complete-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 10px;
+            background: #f7fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #a0aec0;
+            font-weight: 500;
+        }
+
+        .calendar-day.completed {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .calendar-day.today {
+            border: 2px solid #667eea;
+        }
+
+        .motivation {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.6;
+            margin-top: 20px;
+            font-style: italic;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            background: #f7fafc;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 5px;
+        }
+
+        .timer {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .timer-text {
+            font-size: 14px;
+            color: #856404;
+            font-weight: 500;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(-5deg); }
+            75% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .celebrate {
+            animation: celebrate 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️ 体态矫正打卡</h1>
+            <p>坚持每天10分钟，3个月见证改变</p>
+        </div>
+
+        <div class="streak">
+            <div class="streak-text">连续打卡</div>
+            <div class="streak-number" id="streakNumber">0</div>
+            <div class="streak-text">天 🔥</div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">📊 本周进度</div>
+            <div class="calendar" id="weekCalendar"></div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalDays">0</div>
+                    <div class="stat-label">总天数</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="completionRate">0%</div>
+                    <div class="stat-label">完成率</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="longestStreak">0</div>
+                    <div class="stat-label">最长连续</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">🎯 今日任务</div>
+            
+            <!-- 练习1: 下巴回收 -->
+            <div class="exercise-block">
+                <div class="exercise-header">
+                    <span class="exercise-emoji">⭐</span>
+                    <div class="exercise-title-box">
+                        <div class="exercise-name">下巴回收 (Chin Tuck)</div>
+                        <div class="exercise-importance">🔥 最重要 - Level 1a证据支持</div>
+                    </div>
+                </div>
+                <div class="exercise-description">
+                    <strong>动作要领：</strong>靠墙站立，下巴向后收（不是低头），感觉后脑勺向墙壁靠近，保持5秒。想象你在做"双下巴"的动作。
+                </div>
+                <div class="sets-container">
+                    <div class="set-item" data-exercise="chinTuck" data-set="1">
+                        <span class="set-label">第1组 (15次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="chinTuck" data-set="2">
+                        <span class="set-label">第2组 (15次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="chinTuck" data-set="3">
+                        <span class="set-label">第3组 (15次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 练习2: 胸肌拉伸 -->
+            <div class="exercise-block">
+                <div class="exercise-header">
+                    <span class="exercise-emoji">💪</span>
+                    <div class="exercise-title-box">
+                        <div class="exercise-name">胸肌拉伸 (Pectoral Stretch)</div>
+                        <div class="exercise-importance">Level 1b证据支持</div>
+                    </div>
+                </div>
+                <div class="exercise-description">
+                    <strong>动作要领：</strong>站在门框旁，手肘90度贴门框，身体慢慢向前转，感觉胸前拉伸。保持30秒，不要憋气。左右两侧都要做。
+                </div>
+                <div class="sets-container">
+                    <div class="set-item" data-exercise="pectoralStretch" data-set="1">
+                        <span class="set-label">第1组 (30秒)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="pectoralStretch" data-set="2">
+                        <span class="set-label">第2组 (30秒)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="pectoralStretch" data-set="3">
+                        <span class="set-label">第3组 (30秒)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 练习3: 肩胛骨后缩 -->
+            <div class="exercise-block">
+                <div class="exercise-header">
+                    <span class="exercise-emoji">🔄</span>
+                    <div class="exercise-title-box">
+                        <div class="exercise-name">肩胛骨后缩 (Scapular Retraction)</div>
+                        <div class="exercise-importance">强化背部核心动作</div>
+                    </div>
+                </div>
+                <div class="exercise-description">
+                    <strong>动作要领：</strong>站直或坐直，想象用肩胛骨夹住一支笔，肩膀向后向下收，保持3秒。不要耸肩，保持自然呼吸。
+                </div>
+                <div class="sets-container">
+                    <div class="set-item" data-exercise="scapularRetraction" data-set="1">
+                        <span class="set-label">第1组 (15次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="scapularRetraction" data-set="2">
+                        <span class="set-label">第2组 (15次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="scapularRetraction" data-set="3">
+                        <span class="set-label">第3组 (15次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 练习4: Y-T-W训练 -->
+            <div class="exercise-block">
+                <div class="exercise-header">
+                    <span class="exercise-emoji">🦅</span>
+                    <div class="exercise-title-box">
+                        <div class="exercise-name">Y-T-W 训练 (Shoulder Stability)</div>
+                        <div class="exercise-importance">肩胛稳定 + 下斜方肌激活</div>
+                    </div>
+                </div>
+                <div class="exercise-description">
+                    <strong>动作要领：</strong>趴在床上或瑜伽垫，双臂分别做Y形（斜上举）、T形（水平展开）、W形（肘弯曲后拉），每个姿势保持2秒。
+                </div>
+                <div class="sets-container">
+                    <div class="set-item" data-exercise="ytw" data-set="1">
+                        <span class="set-label">第1组 (Y-T-W各10次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="ytw" data-set="2">
+                        <span class="set-label">第2组 (Y-T-W各10次)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 练习5: 斜方肌拉伸 -->
+            <div class="exercise-block">
+                <div class="exercise-header">
+                    <span class="exercise-emoji">😌</span>
+                    <div class="exercise-title-box">
+                        <div class="exercise-name">上斜方肌拉伸 (Upper Trap Stretch)</div>
+                        <div class="exercise-importance">放松颈肩 + 缓解紧张</div>
+                    </div>
+                </div>
+                <div class="exercise-description">
+                    <strong>动作要领：</strong>坐直，右手轻放头顶，头向右侧倾斜，左肩同时向下压。感觉左侧颈部拉伸，保持30秒。左右交替。
+                </div>
+                <div class="sets-container">
+                    <div class="set-item" data-exercise="trapStretch" data-set="1">
+                        <span class="set-label">第1组 (左右各30秒)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                    <div class="set-item" data-exercise="trapStretch" data-set="2">
+                        <span class="set-label">第2组 (左右各30秒)</span>
+                        <div class="checkbox-small"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timer">
+                <div class="timer-text">⏱️ 预计用时：10-15分钟 | 📋 共完成 <span id="completedSets">0</span>/13 组</div>
+            </div>
+
+            <button class="complete-btn" id="completeBtn" disabled>
+                完成今日训练 🎉
+            </button>
+        </div>
+
+        <div class="motivation" id="motivation">
+            💪 每一次坚持，都是对未来更好的自己的投资
+        </div>
+    </div>
+
+    <script>
+        // 数据存储
+        const STORAGE_KEY = 'postureTracker';
+        
+        // 总组数
+        const TOTAL_SETS = 13; // 3+3+3+2+2
+        
+        // 励志语录
+        const motivations = [
+            '💪 每一次坚持，都是对未来更好的自己的投资',
+            '🌟 24岁，改变体态的黄金时期！',
+            '🔥 研究证明：4周就能看到明显改善',
+            '✨ 今天的10分钟，换来明天的自信站姿',
+            '🎯 连续3个月，见证脱胎换骨的改变',
+            '💎 好的体态，是一生的财富',
+            '🚀 每天进步1%，一年后你会好37倍',
+            '🌈 坚持的意义，就在于看到改变的那一刻'
+        ];
+
+        // 获取存储的数据
+        function getData() {
+            const data = localStorage.getItem(STORAGE_KEY);
+            if (!data) {
+                return {
+                    completedDates: [],
+                    todayCompleted: {},
+                    streak: 0,
+                    longestStreak: 0
+                };
+            }
+            return JSON.parse(data);
+        }
+
+        // 保存数据
+        function saveData(data) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        }
+
+        // 获取今天的日期字符串
+        function getTodayString() {
+            return new Date().toISOString().split('T')[0];
+        }
+
+        // 计算连续天数
+        function calculateStreak(completedDates) {
+            if (completedDates.length === 0) return 0;
+            
+            const sortedDates = completedDates.sort().reverse();
+            let streak = 0;
+            let currentDate = new Date();
+            
+            for (let dateStr of sortedDates) {
+                const date = new Date(dateStr);
+                const diffDays = Math.floor((currentDate - date) / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === streak) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+
+        // 更新完成组数显示
+        function updateCompletedSets() {
+            const checkedSets = document.querySelectorAll('.set-item.checked').length;
+            document.getElementById('completedSets').textContent = checkedSets;
+            return checkedSets;
+        }
+
+        // 初始化
+        function init() {
+            const data = getData();
+            const today = getTodayString();
+            
+            // 渲染本周日历
+            renderWeekCalendar(data.completedDates);
+            
+            // 更新统计
+            updateStats(data);
+            
+            // 检查今天是否已完成
+            if (data.completedDates.includes(today)) {
+                markAllAsCompleted();
+            } else {
+                // 恢复今天的进度
+                if (data.todayCompleted[today]) {
+                    Object.keys(data.todayCompleted[today]).forEach(key => {
+                        const [exercise, set] = key.split('-');
+                        const item = document.querySelector(`[data-exercise="${exercise}"][data-set="${set}"]`);
+                        if (item && data.todayCompleted[today][key]) {
+                            item.classList.add('checked');
+                        }
+                    });
+                    updateCompletedSets();
+                    checkAllCompleted();
+                }
+            }
+            
+            // 随机显示励志语录
+            const randomMotivation = motivations[Math.floor(Math.random() * motivations.length)];
+            document.getElementById('motivation').textContent = randomMotivation;
+        }
+
+        // 渲染本周日历
+        function renderWeekCalendar(completedDates) {
+            const calendar = document.getElementById('weekCalendar');
+            calendar.innerHTML = '';
+            
+            const today = new Date();
+            const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+            
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                day.textContent = weekDays[date.getDay()];
+                
+                if (completedDates.includes(dateStr)) {
+                    day.classList.add('completed');
+                }
+                
+                if (i === 0) {
+                    day.classList.add('today');
+                }
+                
+                calendar.appendChild(day);
+            }
+        }
+
+        // 更新统计
+        function updateStats(data) {
+            const streak = calculateStreak(data.completedDates);
+            document.getElementById('streakNumber').textContent = streak;
+            document.getElementById('totalDays').textContent = data.completedDates.length;
+            document.getElementById('longestStreak').textContent = data.longestStreak;
+            
+            // 计算完成率 (最近30天)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            const recentCompletions = data.completedDates.filter(dateStr => {
+                return new Date(dateStr) >= thirtyDaysAgo;
+            }).length;
+            const completionRate = Math.round((recentCompletions / 30) * 100);
+            document.getElementById('completionRate').textContent = completionRate + '%';
+        }
+
+        // 检查是否全部完成
+        function checkAllCompleted() {
+            const completedSets = updateCompletedSets();
+            const allCompleted = completedSets === TOTAL_SETS;
+            
+            document.getElementById('completeBtn').disabled = !allCompleted;
+            return allCompleted;
+        }
+
+        // 标记全部完成
+        function markAllAsCompleted() {
+            const setItems = document.querySelectorAll('.set-item');
+            setItems.forEach(item => item.classList.add('checked'));
+            const btn = document.getElementById('completeBtn');
+            btn.disabled = true;
+            btn.textContent = '✅ 今日已完成';
+            updateCompletedSets();
+        }
+
+        // 点击set item
+        document.querySelectorAll('.set-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const data = getData();
+                const today = getTodayString();
+                
+                // 如果今天已经完成，不允许再点击
+                if (data.completedDates.includes(today)) return;
+                
+                const exercise = this.dataset.exercise;
+                const set = this.dataset.set;
+                const key = `${exercise}-${set}`;
+                
+                this.classList.toggle('checked');
+                
+                // 保存进度
+                if (!data.todayCompleted[today]) {
+                    data.todayCompleted[today] = {};
+                }
+                data.todayCompleted[today][key] = this.classList.contains('checked');
+                saveData(data);
+                
+                // 更新完成组数
+                updateCompletedSets();
+                
+                // 检查是否全部完成
+                checkAllCompleted();
+            });
+        });
+
+        // 完成按钮
+        document.getElementById('completeBtn').addEventListener('click', function() {
+            const data = getData();
+            const today = getTodayString();
+            
+            // 添加到完成日期
+            if (!data.completedDates.includes(today)) {
+                data.completedDates.push(today);
+            }
+            
+            // 更新最长连续
+            const currentStreak = calculateStreak(data.completedDates);
+            if (currentStreak > data.longestStreak) {
+                data.longestStreak = currentStreak;
+            }
+            
+            saveData(data);
+            
+            // 庆祝动画
+            document.querySelector('.streak').classList.add('celebrate');
+            setTimeout(() => {
+                document.querySelector('.streak').classList.remove('celebrate');
+            }, 500);
+            
+            // 更新界面
+            markAllAsCompleted();
+            updateStats(data);
+            renderWeekCalendar(data.completedDates);
+            
+            // 显示成功消息
+            const completedSets = updateCompletedSets();
+            alert(`🎉 太棒了！今天的${completedSets}组训练全部完成！\n\n坚持下去，改变就在眼前！\n\n已连续打卡 ${calculateStreak(data.completedDates)} 天 🔥`);
+        });
+
+        // 初始化应用
+        init();
+
+        // 每天自动重置
+        setInterval(() => {
+            const data = getData();
+            const today = getTodayString();
+            if (!data.completedDates.includes(today)) {
+                init();
+            }
+        }, 60000); // 每分钟检查一次
+    </script>
+</body>
+</html>
